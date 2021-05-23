@@ -1,25 +1,25 @@
 const express = require("express");
 const router = express.Router();
-const users = require("./users.service");
+const doctors = require("./doctors.service");
 const asyncHandler = require("express-async-handler");
 
 router.use(function timeLog(req, res, next) {
-	console.log("Users request received. Time: ", new Date());
+	console.log("Doctors request received. Time: ", new Date());
 	next();
 });
 
 router.post(
 	"/register",
 	asyncHandler(async (req, res) => {
-		const doctor = await users.create(req.body);
-		res.status(201).send(doctor);
+		const user = await doctors.create(req.body);
+		res.status(201).json(user);
 	})
 );
 
 router.post(
 	"/login",
 	asyncHandler(async (req, res) => {
-		const token = await users.login(req.body);
+		const token = await doctors.login(req.body);
 		res.send(token);
 	})
 );
@@ -27,8 +27,9 @@ router.post(
 router.get(
 	"/profile",
 	asyncHandler(async (req, res) => {
-		const user = await users.findOne(req.user.id);
-		req.json(user);
+		await doctors.checkDoctor(req.user);
+		const user = await doctors.findOne(req.user.id);
+		res.json(user);
 	})
 );
 

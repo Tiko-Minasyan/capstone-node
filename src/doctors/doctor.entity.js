@@ -29,22 +29,18 @@ const schema = new Schema(
 			minLength: 8,
 			trim: true,
 		},
-		admin: {
-			type: Boolean,
-			default: false,
-		},
 	},
-	{ collection: "users" }
+	{ collection: "doctors" }
 );
 
 schema.methods.toJSON = function () {
-	const user = this;
-	const userObject = user.toObject();
+	const doctor = this;
+	const doctorObject = doctor.toObject();
 
-	delete userObject.password;
-	delete userObject.tokens;
+	delete doctorObject.password;
+	delete doctorObject.tokens;
 
-	return userObject;
+	return doctorObject;
 };
 
-module.exports = mongoose.model("User", schema);
+module.exports = mongoose.model("Doctor", schema);
