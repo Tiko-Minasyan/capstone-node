@@ -9,6 +9,7 @@ const app = express();
 const doctors = require("./doctors/doctors.controller");
 const admins = require("./admins/admins.controller");
 const patients = require("./patients/patients.controller");
+const diagnoses = require("./diagnoses/diagnoses.controller");
 
 const handleError = require("./middlewares/error-handler");
 const authMiddleware = require("./middlewares/auth");
@@ -37,6 +38,7 @@ app.use(
 app.use("/doctors", doctors);
 app.use("/admins", admins);
 app.use("/patients", patients);
+app.use("/diagnoses", diagnoses);
 
 app.use(handleError);
 

@@ -33,4 +33,22 @@ router.get(
 	})
 );
 
+router.patch(
+	"/:id",
+	asyncHandler(async (req, res) => {
+		const id = req.params.id;
+		await patients.update(id, req.body);
+		res.send();
+	})
+);
+
+router.delete(
+	"/:id",
+	asyncHandler(async (req, res) => {
+		const id = req.params.id;
+		await patients.delete(id);
+		res.send();
+	})
+);
+
 module.exports = router;
