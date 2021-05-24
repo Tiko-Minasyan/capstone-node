@@ -22,7 +22,7 @@ class DoctorService {
 
 	async findOne(id) {
 		const doctor = await Doctor.findById(id);
-		if (!doctor) throw new NotFoud("Doctor not found!");
+		if (!doctor) throw new NotFound("Doctor not found!");
 		return doctor;
 	}
 

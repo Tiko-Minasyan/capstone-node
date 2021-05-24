@@ -42,6 +42,12 @@ class AdminService {
 		return doctors;
 	}
 
+	async getDoctor(id) {
+		const doctor = await Doctor.findById(id);
+		if (!doctor) throw new NotFound("Doctor not found!");
+		return doctor;
+	}
+
 	async deleteDoctor(data) {
 		const doctor = await Doctor.findById(data._id);
 		return doctor.delete();

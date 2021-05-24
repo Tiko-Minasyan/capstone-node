@@ -48,6 +48,15 @@ router.get(
 	})
 );
 
+router.get(
+	"/getDoctor/:id",
+	asyncHandler(async (req, res) => {
+		const id = req.params.id;
+		const doctor = await admins.getDoctor(id);
+		res.json(doctor);
+	})
+);
+
 router.delete(
 	"/doctor",
 	asyncHandler(async (req, res) => {

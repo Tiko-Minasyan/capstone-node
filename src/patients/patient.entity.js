@@ -29,7 +29,7 @@ const schema = new Schema(
 		address: {
 			type: String,
 			default: "",
-		},
+		}, // SSID
 	},
 	{ collection: "patients" }
 );

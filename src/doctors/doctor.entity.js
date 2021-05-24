@@ -23,6 +23,18 @@ const schema = new Schema(
 			type: String,
 			required: true,
 		},
+		phone: {
+			type: String,
+			default: "",
+		},
+		address: {
+			type: String,
+			default: "",
+		},
+		photo: {
+			type: String,
+			default: "default.jpg",
+		},
 		password: {
 			type: String,
 			required: true,
