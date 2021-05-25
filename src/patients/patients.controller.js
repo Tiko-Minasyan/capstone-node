@@ -46,7 +46,7 @@ router.delete(
 	"/:id",
 	asyncHandler(async (req, res) => {
 		const id = req.params.id;
-		await patients.delete(id);
+		await patients.delete(id, req.user.id);
 		res.send();
 	})
 );

@@ -34,48 +34,22 @@ router.get(
 );
 
 router.patch(
-	"/edit",
+	"/",
 	asyncHandler(async (req, res) => {
-		if (req.body.password.length > 0) {
-			const isMatch = await bcrypt.compare(
-				req.body.oldPassword,
-				req.user.password
-			);
-			if (!isMatch) {
-				throw new Error("Passwords don't match!");
-			}
-		}
-
-		const updates = req.body;
-		delete updates.oldPassword;
-		delete updates.token;
-		if (updates.password === "") delete updates.password;
-
-		let emailChanged = false;
-		if (updates.email !== req.user.email) {
-			req.user.verified = false;
-			emailChanged = true;
-		}
-
-		for (let item in updates) {
-			req.user[item] = updates[item];
-		}
-		await req.user.save();
-
-		emailChanged && req.user.sendVerificationEmail(1);
-
+		await doctors.update(req.user.id, req.body);
 		res.send();
 	})
 );
 
-router.get(
-	"/delete",
+router.patch(
+	"/password",
 	asyncHandler(async (req, res) => {
-		await req.user.remove();
+		await doctors.updatePassword(req.user.id, req.body);
 		res.send();
 	})
 );
 
+/*
 router.get("/verifyEmail", async (req, res) => {
 	const email = req.query.email;
 
@@ -100,5 +74,6 @@ router.get("/sendVerify", async (req, res) => {
 		res.status(400).send(e);
 	}
 });
+*/
 
 module.exports = router;

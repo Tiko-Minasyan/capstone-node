@@ -17,21 +17,18 @@ const adminMiddleware = require("./middlewares/checkAdmin");
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static("public"));
 
 app.use(
 	authMiddleware.unless({
-		path: [
-			"/doctors/login",
-			"/admins/login",
-			"/admins/register",
-			"/patients/register",
-		],
+		path: ["/doctors/login", "/admins/login", "/admins/register"],
 	})
 );
+
 app.use(
 	"/admins",
 	adminMiddleware.unless({
-		path: ["/admins/login"],
+		path: ["/admins/login", "/admins/register"],
 	})
 );
 

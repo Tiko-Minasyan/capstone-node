@@ -1,6 +1,8 @@
 const Admin = require("./admin.entity");
 const Doctor = require("../doctors/doctor.entity");
+const Archive_Doctor = require("../archives/doctor.archive");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 const { NotFound, Forbidden } = require("http-errors");
 
 class AdminService {
@@ -12,7 +14,8 @@ class AdminService {
 	async login(data) {
 		const admin = await Admin.findOne({ email: data.email });
 		if (!admin) throw new NotFound("Admin not found!");
-		if (admin.password !== data.password)
+
+		if (!bcrypt.compareSync(data.password, admin.password))
 			throw new Forbidden("Wrong password!");
 
 		const token = jwt.sign(
@@ -34,6 +37,7 @@ class AdminService {
 
 	createDoctor(data) {
 		const doctor = new Doctor(data);
+		doctor.password = "medicalcenterapp";
 		return doctor.save();
 	}
 
@@ -48,8 +52,16 @@ class AdminService {
 		return doctor;
 	}
 
-	async deleteDoctor(data) {
-		const doctor = await Doctor.findById(data._id);
+	async deleteDoctor(id) {
+		const doctor = await Doctor.findById(id);
+
+		const doctorObject = doctor.toObject();
+		delete doctorObject._id;
+		const archive = new Archive_Doctor(doctorObject);
+
+		archive.deletedAt = Date.now();
+		archive.save();
+
 		return doctor.delete();
 	}
 }

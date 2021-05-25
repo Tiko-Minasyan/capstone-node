@@ -58,10 +58,11 @@ router.get(
 );
 
 router.delete(
-	"/doctor",
+	"/doctor/:id",
 	asyncHandler(async (req, res) => {
-		doctor = await admins.deleteDoctor(req.body.doctor);
-		res.json(doctor);
+		const id = req.params.id;
+		await admins.deleteDoctor(id);
+		res.send();
 	})
 );
 

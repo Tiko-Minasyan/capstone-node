@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 const Schema = mongoose.Schema;
 
 const schema = new Schema(
@@ -41,6 +42,10 @@ const schema = new Schema(
 			minLength: 8,
 			trim: true,
 		},
+		firstLogin: {
+			type: Boolean,
+			default: true,
+		},
 	},
 	{ collection: "doctors" }
 );
@@ -50,9 +55,17 @@ schema.methods.toJSON = function () {
 	const doctorObject = doctor.toObject();
 
 	delete doctorObject.password;
-	delete doctorObject.tokens;
 
 	return doctorObject;
 };
+
+schema.pre("save", function (next) {
+	if (this.isModified("password")) {
+		const salt = bcrypt.genSaltSync(10);
+		this.password = bcrypt.hashSync(this.password, salt);
+	}
+
+	next();
+});
 
 module.exports = mongoose.model("Doctor", schema);

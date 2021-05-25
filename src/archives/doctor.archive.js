@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 const Schema = mongoose.Schema;
 
 const schema = new Schema(
@@ -20,23 +19,24 @@ const schema = new Schema(
 			trim: true,
 			unique: true,
 		},
-		password: {
+		profession: {
 			type: String,
 			required: true,
-			minLength: 8,
-			trim: true,
+		},
+		phone: {
+			type: String,
+			default: "",
+		},
+		address: {
+			type: String,
+			default: "",
+		},
+		deletedAt: {
+			type: Date,
+			required: true,
 		},
 	},
-	{ collection: "admins" }
+	{ collection: "archive-doctors" }
 );
 
-schema.pre("save", function (next) {
-	if (this.isModified("password")) {
-		const salt = bcrypt.genSaltSync(10);
-		this.password = bcrypt.hashSync(this.password, salt);
-	}
-
-	next();
-});
-
-module.exports = mongoose.model("Admin", schema);
+module.exports = mongoose.model("Archive_Doctor", schema);
