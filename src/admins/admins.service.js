@@ -41,9 +41,42 @@ class AdminService {
 		return doctor.save();
 	}
 
-	async getDoctors() {
-		const doctors = await Doctor.find({});
-		return doctors;
+	async getDoctors(skip) {
+		const doctors = await Doctor.find({}).limit(10).skip(skip);
+		const count = await Doctor.countDocuments();
+		return { doctors, count };
+	}
+
+	async searchDoctors(data, skip) {
+		const name = data.name ? data.name.toLowerCase().split(" ") : [];
+		const profession = data.profession;
+
+		let doctors = await Doctor.find({
+			profession: { $regex: new RegExp(".*" + profession + ".*", "i") },
+		});
+
+		if (name.length === 0)
+			return { doctors: doctors.slice(skip, skip + 10), count: doctors.length };
+		if (name.length > 2) return [];
+
+		const nameSurname = [name[0]];
+		nameSurname.push(name[1] !== undefined ? name[1] : "");
+
+		doctors = doctors.filter((doctor) => {
+			const fullName = [
+				doctor.name.toLowerCase(),
+				doctor.surname.toLowerCase(),
+			];
+
+			return (
+				(fullName[0].includes(nameSurname[0]) &&
+					fullName[1].includes(nameSurname[1])) ||
+				(fullName[0].includes(nameSurname[1]) &&
+					fullName[1].includes(nameSurname[0]))
+			);
+		});
+
+		return { doctors: doctors.slice(skip, skip + 10), count: doctors.length };
 	}
 
 	async getDoctor(id) {

@@ -43,7 +43,17 @@ router.post(
 router.get(
 	"/getDoctors",
 	asyncHandler(async (req, res) => {
-		doctors = await admins.getDoctors();
+		const skip = req.query.skip;
+		const doctors = await admins.getDoctors(+skip);
+		res.json(doctors);
+	})
+);
+
+router.post(
+	"/getDoctors",
+	asyncHandler(async (req, res) => {
+		const skip = req.query.skip;
+		const doctors = await admins.searchDoctors(req.body, +skip);
 		res.json(doctors);
 	})
 );

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Doctor = require("../doctors/doctor.entity");
 const Schema = mongoose.Schema;
 
 const schema = new Schema(
@@ -28,8 +29,25 @@ const schema = new Schema(
 		},
 		address: {
 			type: String,
-			default: "",
-		}, // SSID
+			required: true,
+		},
+		previousAddresses: {
+			type: Array,
+			default: [],
+		},
+		passportID: {
+			type: String,
+			required: true,
+		},
+		SSID: {
+			type: String,
+			required: true,
+		},
+		createdBy: {
+			type: mongoose.Types.ObjectId,
+			ref: Doctor,
+			required: true,
+		},
 	},
 	{ collection: "patients" }
 );

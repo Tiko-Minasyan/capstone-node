@@ -1,4 +1,4 @@
-const { Forbidden } = require("http-errors");
+const { Unauthorized } = require("http-errors");
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = async (req, res, next) => {
@@ -8,7 +8,7 @@ const authMiddleware = async (req, res, next) => {
 
 		req.user = user;
 	} catch (e) {
-		return next(new Forbidden("Not authorized!"));
+		return next(new Unauthorized("Not authorized!"));
 	}
 
 	next();

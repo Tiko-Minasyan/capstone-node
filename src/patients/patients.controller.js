@@ -11,7 +11,7 @@ router.use(function timeLog(req, res, next) {
 router.post(
 	"/",
 	asyncHandler(async (req, res) => {
-		const id = await patients.create(req.body);
+		const id = await patients.create(req.body, req.user.id);
 		res.status(201).send(id);
 	})
 );
@@ -19,7 +19,25 @@ router.post(
 router.get(
 	"/",
 	asyncHandler(async (req, res) => {
-		const result = await patients.getAll();
+		const skip = req.query.skip;
+		const result = await patients.getAll(+skip);
+		res.json(result);
+	})
+);
+
+router.post(
+	"/name",
+	asyncHandler(async (req, res) => {
+		const skip = req.query.skip;
+		const result = await patients.searchByName(req.body, +skip);
+		res.json(result);
+	})
+);
+
+router.post(
+	"/id",
+	asyncHandler(async (req, res) => {
+		const result = await patients.searchById(req.body);
 		res.json(result);
 	})
 );
