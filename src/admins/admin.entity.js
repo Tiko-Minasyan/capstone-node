@@ -14,6 +14,11 @@ const schema = new Schema(
 			required: true,
 			trim: true,
 		},
+		position: {
+			type: String,
+			required: true,
+			trim: true,
+		},
 		email: {
 			type: String,
 			required: true,

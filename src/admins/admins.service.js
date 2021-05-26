@@ -8,6 +8,7 @@ const { NotFound, Forbidden } = require("http-errors");
 class AdminService {
 	create(data) {
 		const admin = new Admin(data);
+		admin.password = "medicalcenteradmin";
 		return admin.save();
 	}
 
@@ -27,6 +28,20 @@ class AdminService {
 		);
 
 		return token;
+	}
+
+	async update(id, data) {
+		const admin = await this.findOne(id);
+
+		if (!!data.password) {
+			if (!bcrypt.compareSync(data.oldPassword, admin.password))
+				throw new Forbidden("Wrong password!");
+
+			admin.password = data.password;
+		}
+
+		admin.email = data.email;
+		return admin.save();
 	}
 
 	async findOne(id) {

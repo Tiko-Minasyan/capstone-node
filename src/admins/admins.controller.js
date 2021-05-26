@@ -24,6 +24,14 @@ router.post(
 	})
 );
 
+router.patch(
+	"/",
+	asyncHandler(async (req, res) => {
+		await admins.update(req.user.id, req.body);
+		res.send();
+	})
+);
+
 router.get(
 	"/profile",
 	asyncHandler(async (req, res) => {
