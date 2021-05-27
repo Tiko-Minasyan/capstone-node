@@ -3,8 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { NotFound, Forbidden, Conflict } = require("http-errors");
 const fs = require("fs");
-const { promisify } = require("util");
-const pipeline = promisify(require("stream").pipeline);
+const path = require("path");
 
 class DoctorService {
 	async login(data) {
@@ -54,24 +53,33 @@ class DoctorService {
 		return doctor.save();
 	}
 
-	async editPicture(req) {
-		const { file } = req;
-		console.log(file);
-		// console.log(file);
-		// const fileName =
-		// Math.floor(Math.random() * 1000000) + file.detectedFileExtension;
-		// await pipeline(
-		// 	file.stream,
-		// 	fs.createWriteStream(`${__dirname}/../../public/images/${123}.png`)
-		// );
-		// models.users.findByIdAndUpdate(
-		// 	{ _id: req.user.id },
-		// 	{ img: fileName },
-		// 	function (err) {
-		// 		if (err) return next(createError(409));
-		// 		res.json({ fileName });
-		// 	}
-		// );
+	async editPicture(id, file) {
+		const allowedExtensions = [".jpg", ".jpeg", ".png"];
+		if (!allowedExtensions.includes(path.extname(file.originalname)))
+			throw new Forbidden("File is not an image!");
+
+		const doctor = await this.findOne(id);
+		const imgPath = `${__dirname}/../../public/images/`;
+
+		if (doctor.photo !== "default.jpg") {
+			fs.unlinkSync(imgPath + doctor.photo);
+		}
+		fs.writeFileSync(`${imgPath}/${id}.png`, file.buffer);
+
+		doctor.photo = id + ".png";
+		return doctor.save();
+	}
+
+	async deletePicture(id) {
+		const doctor = await this.findOne(id);
+
+		if (doctor.photo !== "default.jpg") {
+			const imgPath = `${__dirname}/../../public/images/`;
+			fs.unlinkSync(imgPath + doctor.photo);
+			doctor.photo = "default.jpg";
+			return doctor.save();
+		}
+		return;
 	}
 }
 

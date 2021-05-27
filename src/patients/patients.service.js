@@ -1,6 +1,5 @@
 const Patient = require("./patient.entity");
 const Diagnosis = require("../diagnoses/diagnosis.entity");
-const diagnoses = require("../diagnoses/diagnoses.service");
 const { NotFound } = require("http-errors");
 const Archive_Patient = require("../archives/patient.archive");
 const Archive_Diagnosis = require("../archives/diagnosis.archive");
@@ -78,11 +77,10 @@ class PatientsService {
 	}
 
 	async delete(id, doctorId, data) {
-		const patientDiagnoses = await diagnoses.get(id);
+		const patientDiagnoses = await Diagnosis.find({ patient: id });
 
 		patientDiagnoses.forEach((item) => {
 			const diagnosisObject = item.toObject();
-			delete diagnosisObject._id;
 			const archive = new Archive_Diagnosis(diagnosisObject);
 
 			archive.deletedAt = Date.now();

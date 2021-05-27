@@ -2,15 +2,46 @@ const Diagnosis = require("./diagnosis.entity");
 const Archive_Diagnosis = require("../archives/diagnosis.archive");
 
 class DiagnosisService {
-	async get(id) {
+	async get(id, skip) {
 		const diagnoses = await Diagnosis.find({ patient: id })
-			.populate({
-				path: "doctor",
-			})
+			.populate("doctor")
+			.populate("archivedDoctor")
+			.sort({ updatedAt: -1 })
+			.limit(10)
+			.skip(skip);
+
+		const count = await Diagnosis.countDocuments();
+		return { diagnoses, count };
+	}
+
+	async search(id, data, skip) {
+		let diagnoses = await Diagnosis.find({ patient: id })
+			.populate("doctor")
 			.populate("archivedDoctor")
 			.sort({ updatedAt: -1 });
 
-		return diagnoses;
+		const searchProfession = data.profession.toLowerCase();
+		let isFinished = null;
+		if (data.finished === "Finished") isFinished = true;
+		if (data.finished === "Unfinished") isFinished = false;
+
+		diagnoses = diagnoses.filter((diagnosis) => {
+			const profession = diagnosis.doctor.profession.toLowerCase();
+
+			if (isFinished !== null) {
+				return (
+					profession.includes(searchProfession) &&
+					diagnosis.isFinished === isFinished
+				);
+			} else {
+				return profession.includes(searchProfession);
+			}
+		});
+
+		return {
+			diagnoses: diagnoses.slice(skip, skip + 10),
+			count: diagnoses.length,
+		};
 	}
 
 	async getByDoctorId(id) {

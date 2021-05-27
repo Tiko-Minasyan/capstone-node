@@ -55,7 +55,15 @@ router.post(
 	"/picture",
 	upload.single("file"),
 	asyncHandler(async (req, res) => {
-		await doctors.editPicture(req);
+		await doctors.editPicture(req.user.id, req.file);
+		res.send();
+	})
+);
+
+router.get(
+	"/deletePicture",
+	asyncHandler(async (req, res) => {
+		await doctors.deletePicture(req.user.id);
 		res.send();
 	})
 );
