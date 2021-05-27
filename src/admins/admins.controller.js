@@ -61,8 +61,8 @@ router.post(
 	"/getDoctors",
 	asyncHandler(async (req, res) => {
 		const skip = req.query.skip;
-		const doctors = await admins.searchDoctors(req.body, +skip);
-		res.json(doctors);
+		const result = await admins.searchDoctors(req.body, +skip);
+		res.json(result);
 	})
 );
 
@@ -70,8 +70,17 @@ router.get(
 	"/getDoctor/:id",
 	asyncHandler(async (req, res) => {
 		const id = req.params.id;
-		const doctor = await admins.getDoctor(id);
-		res.json(doctor);
+		const result = await admins.getDoctor(id);
+		res.json(result);
+	})
+);
+
+router.post(
+	"/warning/:id",
+	asyncHandler(async (req, res) => {
+		const id = req.params.id;
+		await admins.writeWarning(id, req.body);
+		res.send();
 	})
 );
 
@@ -79,7 +88,7 @@ router.delete(
 	"/doctor/:id",
 	asyncHandler(async (req, res) => {
 		const id = req.params.id;
-		await admins.deleteDoctor(id);
+		await admins.deleteDoctor(id, req.body);
 		res.send();
 	})
 );

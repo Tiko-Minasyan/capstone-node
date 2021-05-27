@@ -1,5 +1,6 @@
 const Admin = require("./admin.entity");
 const Doctor = require("../doctors/doctor.entity");
+const diagnosis = require("../diagnoses/diagnoses.service");
 const Archive_Doctor = require("../archives/doctor.archive");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -53,6 +54,7 @@ class AdminService {
 	createDoctor(data) {
 		const doctor = new Doctor(data);
 		doctor.password = "medicalcenterapp";
+		doctor.createdAt = Date.now();
 		return doctor.save();
 	}
 
@@ -97,17 +99,30 @@ class AdminService {
 	async getDoctor(id) {
 		const doctor = await Doctor.findById(id);
 		if (!doctor) throw new NotFound("Doctor not found!");
-		return doctor;
+
+		const diagnoses = await diagnosis.getByDoctorId(id);
+
+		return { doctor, diagnoses };
 	}
 
-	async deleteDoctor(id) {
+	async writeWarning(id, data) {
+		const doctor = await Doctor.findById(id);
+		if (!doctor) throw new NotFound("Doctor not found!");
+
+		doctor.warnings = [...doctor.warnings, { ...data, date: Date.now() }];
+		return doctor.save();
+	}
+
+	async deleteDoctor(id, data) {
 		const doctor = await Doctor.findById(id);
 
 		const doctorObject = doctor.toObject();
 		delete doctorObject._id;
 		const archive = new Archive_Doctor(doctorObject);
 
+		archive.deleteReason = data.deleteReason;
 		archive.deletedAt = Date.now();
+		archive._id = id;
 		archive.save();
 
 		return doctor.delete();

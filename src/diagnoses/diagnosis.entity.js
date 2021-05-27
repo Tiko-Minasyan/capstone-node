@@ -2,14 +2,24 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Doctor = require("../doctors/doctor.entity");
 const Patient = require("../patients/patient.entity");
+const Archive_Doctor = require("../archives/doctor.archive");
+const Archive_Patient = require("../archives/patient.archive");
 
 const schema = new Schema(
 	{
+		archivedDoctor: {
+			type: mongoose.Types.ObjectId,
+			ref: Archive_Doctor,
+		},
 		doctor: {
 			type: mongoose.Types.ObjectId,
 			ref: Doctor,
 		},
-		patientID: {
+		archivedPatient: {
+			type: mongoose.Types.ObjectId,
+			ref: Archive_Patient,
+		},
+		patient: {
 			type: mongoose.Types.ObjectId,
 			ref: Patient,
 		},

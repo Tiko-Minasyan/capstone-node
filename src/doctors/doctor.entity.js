@@ -46,6 +46,26 @@ const schema = new Schema(
 			type: Boolean,
 			default: true,
 		},
+		warnings: [
+			{
+				details: {
+					type: String,
+					required: true,
+				},
+				date: {
+					type: Date,
+					required: true,
+				},
+				severity: {
+					type: String,
+					enum: ["low", "medium", "high", "very high"],
+				},
+			},
+		],
+		createdAt: {
+			type: Date,
+			required: true,
+		},
 	},
 	{ collection: "doctors" }
 );

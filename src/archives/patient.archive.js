@@ -31,6 +31,18 @@ const schema = new Schema(
 			type: String,
 			default: "",
 		},
+		passportID: {
+			type: String,
+			required: true,
+		},
+		SSID: {
+			type: String,
+			required: true,
+		},
+		deleteReason: {
+			type: String,
+			required: true,
+		},
 		deletedAt: {
 			type: Date,
 			required: true,

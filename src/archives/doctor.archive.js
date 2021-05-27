@@ -17,7 +17,6 @@ const schema = new Schema(
 			type: String,
 			required: true,
 			trim: true,
-			unique: true,
 		},
 		profession: {
 			type: String,
@@ -30,6 +29,18 @@ const schema = new Schema(
 		address: {
 			type: String,
 			default: "",
+		},
+		warnings: {
+			type: Array,
+			required: true,
+		},
+		deleteReason: {
+			type: String,
+			required: true,
+		},
+		createdAt: {
+			type: Date,
+			required: true,
 		},
 		deletedAt: {
 			type: Date,

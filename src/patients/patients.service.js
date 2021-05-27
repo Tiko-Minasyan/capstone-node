@@ -77,7 +77,7 @@ class PatientsService {
 		return patient.save();
 	}
 
-	async delete(id, doctorId) {
+	async delete(id, doctorId, data) {
 		const patientDiagnoses = await diagnoses.get(id);
 
 		patientDiagnoses.forEach((item) => {
@@ -97,8 +97,10 @@ class PatientsService {
 		delete patientObject._id;
 		const archive = new Archive_Patient(patientObject);
 
+		archive.deleteReason = data.deleteReason;
 		archive.deletedAt = Date.now();
 		archive.deletedBy = doctorId;
+		archive._id = id;
 		archive.save();
 
 		return patient.delete();

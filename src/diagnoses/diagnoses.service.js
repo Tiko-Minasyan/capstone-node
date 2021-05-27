@@ -3,9 +3,21 @@ const Archive_Diagnosis = require("../archives/diagnosis.archive");
 
 class DiagnosisService {
 	async get(id) {
-		const diagnoses = await Diagnosis.find({ patientID: id })
-			.populate("doctor")
+		const diagnoses = await Diagnosis.find({ patient: id })
+			.populate({
+				path: "doctor",
+			})
+			.populate("archivedDoctor")
 			.sort({ updatedAt: -1 });
+
+		return diagnoses;
+	}
+
+	async getByDoctorId(id) {
+		const diagnoses = await Diagnosis.find({ doctor: id })
+			.populate("patient")
+			.sort({ updatedAt: -1 });
+
 		return diagnoses;
 	}
 
@@ -16,7 +28,9 @@ class DiagnosisService {
 		const diagnosis = new Diagnosis({
 			...data,
 			doctor: userId,
-			patientID: id,
+			archivedDoctor: userId,
+			patient: id,
+			archivedPatient: id,
 			createdAt: Date.now(),
 			updatedAt: Date.now(),
 			isFinished,

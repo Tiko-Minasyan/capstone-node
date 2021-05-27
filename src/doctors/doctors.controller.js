@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const doctors = require("./doctors.service");
 const asyncHandler = require("express-async-handler");
+const multer = require("multer");
+const upload = multer();
 
 router.use(function timeLog(req, res, next) {
 	console.log("Doctors request received. Time: ", new Date());
@@ -45,6 +47,15 @@ router.patch(
 	"/password",
 	asyncHandler(async (req, res) => {
 		await doctors.updatePassword(req.user.id, req.body);
+		res.send();
+	})
+);
+
+router.post(
+	"/picture",
+	upload.single("file"),
+	asyncHandler(async (req, res) => {
+		await doctors.editPicture(req);
 		res.send();
 	})
 );

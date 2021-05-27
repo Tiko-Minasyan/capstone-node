@@ -2,6 +2,9 @@ const Doctor = require("./doctor.entity");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { NotFound, Forbidden, Conflict } = require("http-errors");
+const fs = require("fs");
+const { promisify } = require("util");
+const pipeline = promisify(require("stream").pipeline);
 
 class DoctorService {
 	async login(data) {
@@ -49,6 +52,26 @@ class DoctorService {
 			firstLogin: false,
 		});
 		return doctor.save();
+	}
+
+	async editPicture(req) {
+		const { file } = req;
+		console.log(file);
+		// console.log(file);
+		// const fileName =
+		// Math.floor(Math.random() * 1000000) + file.detectedFileExtension;
+		// await pipeline(
+		// 	file.stream,
+		// 	fs.createWriteStream(`${__dirname}/../../public/images/${123}.png`)
+		// );
+		// models.users.findByIdAndUpdate(
+		// 	{ _id: req.user.id },
+		// 	{ img: fileName },
+		// 	function (err) {
+		// 		if (err) return next(createError(409));
+		// 		res.json({ fileName });
+		// 	}
+		// );
 	}
 }
 
