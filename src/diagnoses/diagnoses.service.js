@@ -10,7 +10,7 @@ class DiagnosisService {
 			.limit(10)
 			.skip(skip);
 
-		const count = await Diagnosis.countDocuments();
+		const count = await Diagnosis.find({ patient: id }).countDocuments();
 		return { diagnoses, count };
 	}
 
@@ -26,7 +26,13 @@ class DiagnosisService {
 		if (data.finished === "Unfinished") isFinished = false;
 
 		diagnoses = diagnoses.filter((diagnosis) => {
-			const profession = diagnosis.doctor.profession.toLowerCase();
+			let profession;
+
+			if (diagnosis.doctor) {
+				profession = diagnosis.doctor.profession.toLowerCase();
+			} else {
+				profession = diagnosis.archivedDoctor.profession.toLowerCase();
+			}
 
 			if (isFinished !== null) {
 				return (

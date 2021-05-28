@@ -1,5 +1,6 @@
 const Archive_Doctor = require("./doctor.archive");
 const Archive_Patient = require("./patient.archive");
+const Archive_Diagnosis = require("./diagnosis.archive");
 const diagnosis = require("../diagnoses/diagnoses.service");
 const { NotFound } = require("http-errors");
 
@@ -103,6 +104,69 @@ class ArchiveService {
 		const patient = await Archive_Patient.findById(id);
 		if (!patient) throw new NotFound("Patient not found!");
 		return patient;
+	}
+
+	async getDiagnoses(id, skip) {
+		const diagnoses = await Archive_Diagnosis.find({ patient: id })
+			.populate("doctor")
+			.populate("archivedDoctor")
+			.sort({ updatedAt: -1 })
+			.limit(10)
+			.skip(skip);
+
+		const count = await Archive_Diagnosis.find({
+			patient: id,
+		}).countDocuments();
+		return { diagnoses, count };
+	}
+
+	async searchDiagnoses(id, data, skip) {
+		let diagnoses = await Archive_Diagnosis.find({ patient: id })
+			.populate("doctor")
+			.populate("archivedDoctor")
+			.sort({ updatedAt: -1 });
+
+		const searchProfession = data.profession.toLowerCase();
+		let isFinished = null;
+		if (data.finished === "Finished") isFinished = true;
+		if (data.finished === "Unfinished") isFinished = false;
+
+		diagnoses = diagnoses.filter((diagnosis) => {
+			let profession;
+
+			if (diagnosis.doctor) {
+				profession = diagnosis.doctor.profession.toLowerCase();
+			} else {
+				profession = diagnosis.archivedDoctor.profession.toLowerCase();
+			}
+
+			if (isFinished !== null) {
+				return (
+					profession.includes(searchProfession) &&
+					diagnosis.isFinished === isFinished
+				);
+			} else {
+				return profession.includes(searchProfession);
+			}
+		});
+
+		return {
+			diagnoses: diagnoses.slice(skip, skip + 10),
+			count: diagnoses.length,
+		};
+	}
+
+	async getAllDiagnoses(skip) {
+		const diagnoses = await Archive_Diagnosis.find({})
+			.populate("doctor")
+			.populate("archivedDoctor")
+			.populate("patient")
+			.populate("archivedPatient")
+			.limit(10)
+			.skip(skip);
+
+		const count = await Archive_Diagnosis.countDocuments();
+		return { diagnoses, count };
 	}
 }
 

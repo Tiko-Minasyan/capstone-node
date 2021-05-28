@@ -70,4 +70,33 @@ router.get(
 	})
 );
 
+router.get(
+	"/getDiagnoses/:id",
+	asyncHandler(async (req, res) => {
+		const id = req.params.id;
+		const skip = req.query.skip;
+		const result = await archives.getDiagnoses(id, +skip);
+		res.json(result);
+	})
+);
+
+router.post(
+	"/getDiagnoses/:id",
+	asyncHandler(async (req, res) => {
+		const id = req.params.id;
+		const skip = req.query.skip;
+		const result = await archives.searchDiagnoses(id, req.body, +skip);
+		res.json(result);
+	})
+);
+
+router.get(
+	"/getDiagnoses",
+	asyncHandler(async (req, res) => {
+		const skip = req.query.skip;
+		const result = await archives.getAllDiagnoses(+skip);
+		res.json(result);
+	})
+);
+
 module.exports = router;
