@@ -54,7 +54,7 @@ class PatientsService {
 		const id = data.id;
 
 		const patients = await Patient.find({
-			$or: [{ passportID: id }, { SSID: id }],
+			$or: [{ passportID: id }, { SSN: id }],
 		});
 
 		return { patients, count: patients.length };

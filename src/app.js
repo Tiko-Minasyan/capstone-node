@@ -4,7 +4,6 @@ require("dotenv").config({
 require("./db/mongoose");
 const cors = require("cors");
 const express = require("express");
-const bodyParser = require("body-parser");
 const app = express();
 
 const doctors = require("./doctors/doctors.controller");

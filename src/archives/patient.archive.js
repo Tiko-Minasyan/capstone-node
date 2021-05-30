@@ -35,7 +35,7 @@ const schema = new Schema(
 			type: String,
 			required: true,
 		},
-		SSID: {
+		SSN: {
 			type: String,
 			required: true,
 		},

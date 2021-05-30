@@ -94,7 +94,7 @@ class ArchiveService {
 		const id = data.id;
 
 		const patients = await Archive_Patient.find({
-			$or: [{ passportID: id }, { SSID: id }],
+			$or: [{ passportID: id }, { SSN: id }],
 		});
 
 		return { patients, count: patients.length };
