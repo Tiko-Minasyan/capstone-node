@@ -42,6 +42,10 @@ const schema = new Schema(
 			minLength: 8,
 			trim: true,
 		},
+		recoveryCode: {
+			type: String,
+			default: "",
+		},
 		firstLogin: {
 			type: Boolean,
 			default: true,

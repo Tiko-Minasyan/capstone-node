@@ -70,7 +70,18 @@ router.get(
 	"/getDoctor/:id",
 	asyncHandler(async (req, res) => {
 		const id = req.params.id;
-		const result = await admins.getDoctor(id);
+		const skip = req.query.skip;
+		const result = await admins.getDoctor(id, +skip);
+		res.json(result);
+	})
+);
+
+router.post(
+	"/searchDoctorDiagnoses/:id",
+	asyncHandler(async (req, res) => {
+		const id = req.params.id;
+		const skip = req.query.skip;
+		const result = await admins.searchDoctorDiagnoses(id, req.body, +skip);
 		res.json(result);
 	})
 );

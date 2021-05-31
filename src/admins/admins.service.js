@@ -1,10 +1,13 @@
 const Admin = require("./admin.entity");
 const Doctor = require("../doctors/doctor.entity");
+const Diagnosis = require("../diagnoses/diagnosis.entity");
 const diagnosis = require("../diagnoses/diagnoses.service");
 const Archive_Doctor = require("../archives/doctor.archive");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { NotFound, Forbidden } = require("http-errors");
+const generator = require("generate-password");
+const sendVerificationEmail = require("../sendEmail");
 
 class AdminService {
 	create(data) {
@@ -53,8 +56,19 @@ class AdminService {
 
 	createDoctor(data) {
 		const doctor = new Doctor(data);
-		doctor.password = "medicalcenterapp";
 		doctor.createdAt = Date.now();
+
+		const password = generator.generate({
+			length: 8,
+			numbers: true,
+			lowercase: true,
+			uppercase: false,
+		});
+
+		doctor.password = password;
+		console.log(password);
+
+		sendVerificationEmail(doctor.email, doctor.name, doctor.surname, password);
 		return doctor.save();
 	}
 
@@ -96,13 +110,18 @@ class AdminService {
 		return { doctors: doctors.slice(skip, skip + 10), count: doctors.length };
 	}
 
-	async getDoctor(id) {
+	async getDoctor(id, skip) {
 		const doctor = await Doctor.findById(id);
 		if (!doctor) throw new NotFound("Doctor not found!");
 
-		const diagnoses = await diagnosis.getByDoctorId(id);
+		const result = await diagnosis.getByDoctorId(id, skip);
 
-		return { doctor, diagnoses };
+		return { doctor, diagnoses: result.diagnoses, count: result.count };
+	}
+
+	async searchDoctorDiagnoses(id, data, skip) {
+		const result = await diagnosis.searchByPatient(id, data, skip);
+		return { diagnoses: result.diagnoses, count: result.count };
 	}
 
 	async writeWarning(id, data) {

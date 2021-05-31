@@ -22,7 +22,14 @@ app.use(express.static("public"));
 
 app.use(
 	authMiddleware.unless({
-		path: ["/doctors/login", "/admins/login", "/admins/register"],
+		path: [
+			"/doctors/login",
+			"/doctors/getRecoveryCode",
+			"/doctors/sendRecoveryCode",
+			"/doctors/recoverPassword",
+			"/admins/login",
+			"/admins/register",
+		],
 	})
 );
 

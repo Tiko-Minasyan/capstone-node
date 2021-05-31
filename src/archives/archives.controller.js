@@ -30,7 +30,18 @@ router.get(
 	"/getDoctor/:id",
 	asyncHandler(async (req, res) => {
 		const id = req.params.id;
-		const result = await archives.getDoctor(id);
+		const skip = req.query.skip;
+		const result = await archives.getDoctor(id, +skip);
+		res.json(result);
+	})
+);
+
+router.post(
+	"/searchDoctorDiagnoses/:id",
+	asyncHandler(async (req, res) => {
+		const id = req.params.id;
+		const skip = req.query.skip;
+		const result = await archives.searchDoctorDiagnoses(id, req.body, +skip);
 		res.json(result);
 	})
 );

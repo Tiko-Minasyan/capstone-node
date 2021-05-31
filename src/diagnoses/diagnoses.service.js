@@ -50,12 +50,71 @@ class DiagnosisService {
 		};
 	}
 
-	async getByDoctorId(id) {
+	async getByDoctorId(id, skip) {
 		const diagnoses = await Diagnosis.find({ doctor: id })
+			.populate("patient")
+			.sort({ updatedAt: -1 })
+			.limit(10)
+			.skip(skip);
+
+		const count = await Diagnosis.find({ doctor: id }).countDocuments();
+
+		return { diagnoses, count };
+	}
+
+	async searchByPatient(id, data, skip) {
+		const name = data.patient.toLowerCase().split(" ");
+		if (name.length > 3)
+			return {
+				diagnoses: [],
+				count: 0,
+			};
+
+		let diagnoses = await Diagnosis.find({ doctor: id })
 			.populate("patient")
 			.sort({ updatedAt: -1 });
 
-		return diagnoses;
+		const search = [name[0]];
+		search.push(name[1] !== undefined ? name[1] : "");
+		search.push(name[2] !== undefined ? name[2] : "");
+
+		let isFinished = null;
+		if (data.finished === "Finished") isFinished = true;
+		if (data.finished === "Unfinished") isFinished = false;
+
+		diagnoses = diagnoses.filter((diagnosis) => {
+			const fullName = [
+				diagnosis.patient.name.toLowerCase(),
+				diagnosis.patient.surname.toLowerCase(),
+				diagnosis.patient.fatherName.toLowerCase(),
+			];
+
+			if (isFinished !== null) {
+				return (
+					((fullName[0].includes(search[0]) &&
+						fullName[1].includes(search[1]) &&
+						fullName[2].includes(search[2])) ||
+						(fullName[0].includes(search[1]) &&
+							fullName[1].includes(search[0]) &&
+							fullName[2].includes(search[2]))) &&
+					diagnosis.isFinished === isFinished
+				);
+			} else {
+				return (
+					(fullName[0].includes(search[0]) &&
+						fullName[1].includes(search[1]) &&
+						fullName[2].includes(search[2])) ||
+					(fullName[0].includes(search[1]) &&
+						fullName[1].includes(search[0]) &&
+						fullName[2].includes(search[2]))
+				);
+			}
+		});
+
+		return {
+			diagnoses: diagnoses.slice(skip, skip + 10),
+			count: diagnoses.length,
+		};
 	}
 
 	create(id, userId, data) {

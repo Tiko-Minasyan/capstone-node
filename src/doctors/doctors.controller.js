@@ -11,18 +11,34 @@ router.use(function timeLog(req, res, next) {
 });
 
 router.post(
-	"/register",
-	asyncHandler(async (req, res) => {
-		const user = await doctors.create(req.body);
-		res.status(201).json(user);
-	})
-);
-
-router.post(
 	"/login",
 	asyncHandler(async (req, res) => {
 		const token = await doctors.login(req.body);
 		res.send(token);
+	})
+);
+
+router.post(
+	"/getRecoveryCode",
+	asyncHandler(async (req, res) => {
+		await doctors.getRecoveryCode(req.body);
+		res.send();
+	})
+);
+
+router.post(
+	"/recoverPassword",
+	asyncHandler(async (req, res) => {
+		await doctors.recoverPassword(req.body);
+		res.send();
+	})
+);
+
+router.post(
+	"/sendRecoveryCode",
+	asyncHandler(async (req, res) => {
+		await doctors.sendRecoveryCode(req.body);
+		res.send();
 	})
 );
 

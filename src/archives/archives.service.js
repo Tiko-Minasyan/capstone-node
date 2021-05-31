@@ -43,13 +43,18 @@ class ArchiveService {
 		return { doctors: doctors.slice(skip, skip + 10), count: doctors.length };
 	}
 
-	async getDoctor(id) {
+	async getDoctor(id, skip) {
 		const doctor = await Archive_Doctor.findById(id);
 		if (!doctor) throw new NotFound("Doctor not found!");
 
-		const diagnoses = await diagnosis.getByDoctorId(id);
+		const result = await diagnosis.getByDoctorId(id, skip);
 
-		return { doctor, diagnoses };
+		return { doctor, diagnoses: result.diagnoses, count: result.count };
+	}
+
+	async searchDoctorDiagnoses(id, data, skip) {
+		const result = await diagnosis.searchByPatient(id, data, skip);
+		return { diagnoses: result.diagnoses, count: result.count };
 	}
 
 	async getPatients(skip) {

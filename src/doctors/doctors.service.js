@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const { NotFound, Forbidden, Conflict } = require("http-errors");
 const fs = require("fs");
 const path = require("path");
+const generator = require("generate-password");
+const sendRecoveryEmail = require("../sendEmail");
 
 class DoctorService {
 	async login(data) {
@@ -22,6 +24,48 @@ class DoctorService {
 		);
 
 		return token;
+	}
+
+	async getRecoveryCode(data) {
+		const doctor = await Doctor.findOne({ email: data.email });
+		if (!doctor) throw new NotFound("Doctor not found!");
+
+		const code = generator.generate({
+			length: 4,
+			lowercase: true,
+			numbers: false,
+			uppercase: false,
+		});
+
+		doctor.recoveryCode = code;
+		sendRecoveryEmail(
+			doctor.email,
+			doctor.name,
+			doctor.surname,
+			code,
+			"recovery"
+		);
+		return doctor.save();
+	}
+
+	async sendRecoveryCode(data) {
+		const doctor = await Doctor.findOne({ email: data.email });
+		if (!doctor) throw new NotFound("Doctor not found!");
+
+		if (doctor.recoveryCode !== data.code) throw new Forbidden("Wrong code!");
+
+		return;
+	}
+
+	async recoverPassword(data) {
+		const doctor = await Doctor.findOne({ email: data.email });
+		if (!doctor) throw new NotFound("Doctor not found!");
+
+		if (doctor.recoveryCode !== data.code) throw new Forbidden("Wrong code!");
+
+		doctor.recoveryCode = "";
+		doctor.password = data.password;
+		return doctor.save();
 	}
 
 	async findOne(id) {

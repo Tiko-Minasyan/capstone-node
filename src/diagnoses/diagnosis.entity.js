@@ -75,7 +75,7 @@ const schema = new Schema(
 		// Research plan (what the doctor plans to do with the patient)		-- Blood test, throat liquid analysis, urine test, endocrynologist consultation
 		// Cure	(cannot edit existing cures, can only add)					-- Antibiotics 5 days, Vitamin C 3 days. Recommendation - stay at home, dietic food, another visit in 5 days
 
-		// Final Diagnosis													-- Acording to MRT and XRAY, the patient has cancer
+		// Final Diagnosis													-- Acording to MRT and XRAY, the patient has this disease
 	},
 	{ collection: "diagnoses" }
 );
