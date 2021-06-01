@@ -30,6 +30,10 @@ const schema = new Schema(
 			type: String,
 			default: "",
 		},
+		photo: {
+			type: String,
+			default: "default.jpg",
+		},
 		warnings: {
 			type: Array,
 			required: true,
