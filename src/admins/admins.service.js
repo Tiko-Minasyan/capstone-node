@@ -66,7 +66,6 @@ class AdminService {
 		});
 
 		doctor.password = password;
-		console.log(password);
 
 		sendVerificationEmail(doctor.email, doctor.name, doctor.surname, password);
 		return doctor.save();

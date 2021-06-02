@@ -110,4 +110,13 @@ router.get(
 	})
 );
 
+router.post(
+	"/getDiagnoses",
+	asyncHandler(async (req, res) => {
+		const skip = req.query.skip;
+		const result = await archives.searchAllDiagnoses(req.body, +skip);
+		res.json(result);
+	})
+);
+
 module.exports = router;

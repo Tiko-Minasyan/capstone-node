@@ -167,11 +167,50 @@ class ArchiveService {
 			.populate("archivedDoctor")
 			.populate("patient")
 			.populate("archivedPatient")
+			.sort({ updatedAt: -1 })
 			.limit(10)
 			.skip(skip);
 
 		const count = await Archive_Diagnosis.countDocuments();
 		return { diagnoses, count };
+	}
+
+	async searchAllDiagnoses(data, skip) {
+		let diagnoses = await Archive_Diagnosis.find({})
+			.populate("doctor")
+			.populate("archivedDoctor")
+			.populate("patient")
+			.populate("archivedPatient")
+			.sort({ updatedAt: -1 });
+
+		const searchProfession = data.profession.toLowerCase();
+		let isFinished = null;
+		if (data.finished === "Finished") isFinished = true;
+		if (data.finished === "Unfinished") isFinished = false;
+
+		diagnoses = diagnoses.filter((diagnosis) => {
+			let profession;
+
+			if (diagnosis.doctor) {
+				profession = diagnosis.doctor.profession.toLowerCase();
+			} else {
+				profession = diagnosis.archivedDoctor.profession.toLowerCase();
+			}
+
+			if (isFinished !== null) {
+				return (
+					profession.includes(searchProfession) &&
+					diagnosis.isFinished === isFinished
+				);
+			} else {
+				return profession.includes(searchProfession);
+			}
+		});
+
+		return {
+			diagnoses: diagnoses.slice(skip, skip + 10),
+			count: diagnoses.length,
+		};
 	}
 }
 
