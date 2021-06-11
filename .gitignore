@@ -1,2 +1,5 @@
 node_modules
-public/images
+*.jpg
+*.jpeg
+*.png
+!default.jpg
